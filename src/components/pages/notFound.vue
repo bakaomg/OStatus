@@ -7,6 +7,17 @@
   </div>
 </template>
 
+<script>
+export default {
+  mounted() {
+    this.$store.commit({
+      type: "changeVHeadTitle",
+      value: '404',
+    });
+  }
+}
+</script>
+
 <style scoped>
 .box {
   padding: 70px 0px 0px;

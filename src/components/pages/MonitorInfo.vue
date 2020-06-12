@@ -43,6 +43,10 @@ export default {
     };
   },
   mounted() {
+    this.$store.commit({
+      type: "changeVHeadTitle",
+      value: process.env.VUE_APP_headerTitle,
+    });
     axios({
       method: "POST",
       url: process.env.VUE_APP_UpTimeBot_API_URL + "/v2/getMonitors",
