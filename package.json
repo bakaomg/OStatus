@@ -2,10 +2,21 @@
   "name": "ostatus",
   "version": "0.1.0",
   "private": true,
+  "description": "一个基于 UptimeRobot API 的状态监控仪表盘",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ohmyga233/OStatus.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ohmyga233/OStatus/issues"
+  },
+  "author": "ohmyga <im@bakaomg.cn>",
+  "homepage": "https://github.com/ohmyga233/OStatus#readme",
   "dependencies": {
     "axios": "^0.19.2",
     "chart.js": "^2.9.3",
