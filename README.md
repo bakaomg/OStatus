@@ -21,3 +21,7 @@ $ npm run serve
 ```
 $ npm run build
 ```
+
+## Other
+头图来源：[Pixiv](https://www.pixiv.net/artworks/72246351)<br>
+小声 BB：第一次玩 Vue ，好玩（射射带我入坑的某人
