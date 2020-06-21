@@ -58,6 +58,11 @@ export default {
   },
 
   mounted() {
+    this.$store.commit({
+      type: "changeBackBtn",
+      value: false
+    });
+
     axios({
       method: "POST",
       url: process.env.VUE_APP_UpTimeBot_API_URL + "/v2/getMonitors",

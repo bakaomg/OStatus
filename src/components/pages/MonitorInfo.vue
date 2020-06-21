@@ -101,6 +101,12 @@ export default {
       type: "changeVHeadTitle",
       value: process.env.VUE_APP_headerTitle,
     });
+
+    this.$store.commit({
+      type: "changeBackBtn",
+      value: true
+    });
+
     axios({
       method: "POST",
       url: process.env.VUE_APP_UpTimeBot_API_URL + "/v2/getMonitors",

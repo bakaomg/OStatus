@@ -14,6 +14,10 @@ export default {
       type: "changeVHeadTitle",
       value: '404',
     });
+    this.$store.commit({
+      type: "changeBackBtn",
+      value: true
+    })
   }
 }
 </script>
