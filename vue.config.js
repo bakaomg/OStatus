@@ -16,6 +16,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin'),
 
 module.exports = {
     productionSourceMap: false,
+    css: {
+        sourceMap: false
+    },
     configureWebpack: config => {
         config.plugins.forEach((val) => {
             if (val instanceof HtmlWebpackPlugin) {
@@ -28,9 +31,7 @@ module.exports = {
                 }
 
                 val.options.link = thisLink([
-                    { rel: 'dns-prefetch', href: 'https://cdn.jsdelivr.net' },
                     { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
-                    //{ rel: 'stylesheet', type: 'text/css', href: 'https://cdn.jsdelivr.net/npm/mdui@0.4.3/dist/css/mdui.min.css' }
                     { rel: 'stylesheet', type: 'text/css', href: 'https://fonts.googleapis.com/css?family=Roboto|Ubuntu:400,700' }
                 ])
             }
