@@ -43,3 +43,19 @@ export const getAverage = (data) => {
     let ranges = data.split('-');
     return getUpTime(ranges.pop());
 }
+
+//获取监视器状态
+export const getMonitorStatus = (status) => {
+    switch (status) {
+        case 0:
+            return 'Paused';
+        case 1:
+            return 'Not Checked Yet';
+        case 2:
+            return 'UP';
+        case 8:
+            return 'Seems Down';
+        case 9:
+            return 'Down';
+    }
+}

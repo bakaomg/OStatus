@@ -21,7 +21,7 @@
 
             <tbody>
               <tr v-for="monitors in MonitorsList.monitors">
-                <td>OK</td>
+                <td><span :class="getMonitorStatusClass(getMonitorStatus(monitors.status))">{{ getMonitorStatus(monitors.status) }}</span></td>
 
                 <td class="name">
                   <router-link
@@ -45,7 +45,7 @@
 
 <script>
 import axios from "axios";
-import { getMonitorType, getAverage, getCustomUptimeUnixTime } from "@/plugins/MonitorLibs";
+import { getMonitorType, getAverage, getCustomUptimeUnixTime, getMonitorStatus } from "@/plugins/MonitorLibs";
 
 export default {
   name: "indexPage",
@@ -81,7 +81,12 @@ export default {
   methods: {
     getMonitorType,
     getCustomUptimeUnixTime,
-    getAverage
+    getAverage,
+    getMonitorStatus,
+    getMonitorStatusClass: (status) => {
+      status = status.replace(/\s+/g, "_");
+      return "status status-"+status;
+    }
   }
 };
 </script>
@@ -125,6 +130,27 @@ export default {
 .table-fluid table tbody .name a:hover::before {
   transform: scaleX(1);
   transform-origin: bottom left;
+}
+
+.table-fluid table tbody .status {
+  font-weight: bold;
+}
+
+.table-fluid table tbody .status.status-UP {
+  color: #43A047;
+}
+
+.table-fluid table tbody .status.status-Down,
+.table-fluid table tbody .status.status-Seems_Down {
+  color: #FF5252;
+}
+
+.table-fluid table tbody .status.status-Paused {
+  color: #FF9800;
+}
+
+.table-fluid table tbody .status.status-Not_Checked_Yet {
+  color: #1E88E5;
 }
 </style>
 
