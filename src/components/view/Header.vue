@@ -2,7 +2,9 @@
   <main>
     <div id="headerBG" :style="mainStyle"></div>
     <div class="siteTitle" v-if="!getHeaderTitle">{{ siteTitle }}</div>
-    <div class="siteTitle" v-else v-html="getHeaderTitle">{{ getHeaderTitle }}</div>
+    <div class="siteTitle" v-else v-html="getHeaderTitle">
+      {{ getHeaderTitle }}
+    </div>
   </main>
 </template>
 
@@ -13,7 +15,7 @@ export default {
       mainStyle: {
         backgroundImage: "url(" + require("@/assets/bg.jpg") + ")",
       },
-      siteTitle: process.env.VUE_APP_headerTitle,
+      siteTitle: process.env.VUE_APP_headerTitle
     };
   },
   method: {
@@ -34,6 +36,7 @@ main {
   width: 100%;
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 main #headerBG {
@@ -67,5 +70,23 @@ main .siteTitle {
   text-shadow: 0 0 8px rgba(66, 66, 66, 0.89);
   position: absolute;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0px 5px;
+}
+
+@media(max-width: 600px) {
+  main .siteTitle {
+    top: 88px;
+    font-size: 40px;
+  }
+}
+
+@media(max-width: 420px) {
+  main .siteTitle {
+    top: 95px;
+    font-size: 30px;
+  }
 }
 </style>
