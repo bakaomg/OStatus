@@ -59,3 +59,17 @@ export const getMonitorStatus = (status) => {
             return 'Down';
     }
 }
+
+//获取事件类型
+export const getEventType = (type) => {
+    switch (type) {
+        case 1:
+            return 'Down'
+        case 2:
+            return 'UP'
+        case 99:
+            return 'Paused'
+        case 98:
+            return 'Started'
+    }
+}
