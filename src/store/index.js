@@ -5,11 +5,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    vHeadTitle: ''
+    vHeadTitle: '',
+    backBtn: ''
   },
   mutations: {
     changeVHeadTitle: (state, value) => {
       state.vHeadTitle = value.value
+    },
+    changeBackBtn: (state, value) => {
+      state.backBtn = value.value
     }
   },
   actions: {
