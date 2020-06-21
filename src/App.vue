@@ -20,6 +20,10 @@ export default {
 </script>
 
 <style>
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   padding: 0;
