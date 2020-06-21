@@ -241,4 +241,8 @@ export default {
   font-weight: unset;
   color: #43a047;
 }
+
+.table-fluid table tbody .reason.reason-Monitor_started {
+  color: #1E88E5;
+}
 </style>
