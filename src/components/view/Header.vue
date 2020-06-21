@@ -2,7 +2,7 @@
   <main>
     <div id="headerBG" :style="mainStyle"></div>
     <div class="siteTitle" v-if="!getHeaderTitle">{{ siteTitle }}</div>
-    <div class="siteTitle" v-else>{{ getHeaderTitle }}</div>
+    <div class="siteTitle" v-else v-html="getHeaderTitle">{{ getHeaderTitle }}</div>
   </main>
 </template>
 
