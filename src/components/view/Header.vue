@@ -1,7 +1,8 @@
 <template>
   <main>
     <div id="headerBG" :style="mainStyle"></div>
-    <div class="siteTitle" v-html="getHeaderTitle">{{ (!getHeaderTitle) ? siteTitle : getHeaderTitle }}</div>
+    <div class="siteTitle" v-if="!getHeaderTitle">{{ siteTitle }}</div>
+    <div class="siteTitle" v-else>{{ getHeaderTitle }}</div>
   </main>
 </template>
 
@@ -17,12 +18,12 @@ export default {
   },
   method: {
     changeName: (name) => {
-     this.siteTitle = name
+      this.siteTitle = name;
     }
   },
   computed: {
     getHeaderTitle: (r) => {
-      return r.$store.state.vHeadTitle
+      return r.$store.state.vHeadTitle;
     }
   }
 };
