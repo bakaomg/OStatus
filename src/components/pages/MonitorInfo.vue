@@ -243,7 +243,8 @@ export default {
   color: #ff5252;
 }
 
-.table-fluid table tbody .reason.reason-OK {
+.table-fluid table tbody .reason.reason-OK,
+.table-fluid table tbody .reason.reason-Successful_Response {
   font-weight: unset;
   color: #43a047;
 }
