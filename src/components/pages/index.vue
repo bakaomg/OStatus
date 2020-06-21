@@ -131,27 +131,6 @@ export default {
   transform: scaleX(1);
   transform-origin: bottom left;
 }
-
-.table-fluid table tbody .status {
-  font-weight: bold;
-}
-
-.table-fluid table tbody .status.status-UP {
-  color: #43A047;
-}
-
-.table-fluid table tbody .status.status-Down,
-.table-fluid table tbody .status.status-Seems_Down {
-  color: #FF5252;
-}
-
-.table-fluid table tbody .status.status-Paused {
-  color: #FF9800;
-}
-
-.table-fluid table tbody .status.status-Not_Checked_Yet {
-  color: #1E88E5;
-}
 </style>
 
 <style>
@@ -227,5 +206,27 @@ export default {
 
 .table-hoverable tbody tr:hover {
   background-color: rgba(66, 66, 66, 0.05);
+}
+
+.table-fluid table tbody .status {
+  font-weight: bold;
+}
+
+.table-fluid table tbody .status.status-UP {
+  color: #43A047;
+}
+
+.table-fluid table tbody .status.status-Down,
+.table-fluid table tbody .status.status-Seems_Down {
+  color: #FF5252;
+}
+
+.table-fluid table tbody .status.status-Paused {
+  color: #FF9800;
+}
+
+.table-fluid table tbody .status.status-Not_Checked_Yet,
+.table-fluid table tbody .status.status-Started {
+  color: #1E88E5;
 }
 </style>

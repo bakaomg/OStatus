@@ -9,7 +9,24 @@
 
       <div v-else-if="loaded && Monitor != ''">
         <main class="ubox">
-         <div class="utitle">Uptime <span>(Last 7 days)</span></div>
+          <div class="utitle">Uptime <span>(Last 7 days)</span></div>
+          <div class="table-fluid">
+            <table class="table-hoverable">
+              <thead>
+                <tr>
+                  <th style="border-top:none">Date</th>
+                  <th style="border-top:none">Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr v-for="upTime in UpTimeList">
+                  <td>{{ upTime.time }}</td>
+                  <td>{{ upTime.status }}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </main>
 
         <main class="cbox">
@@ -19,6 +36,41 @@
 
         <main class="ebox">
           <div class="etitle">Latest events</div>
+          <div class="table-fluid">
+            <table class="table-hoverable">
+              <thead>
+                <tr>
+                  <th style="border-top:none">Event</th>
+                  <th style="border-top:none">Date Time</th>
+                  <th style="border-top:none">Reason</th>
+                  <th style="border-top:none">Duration</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr v-for="logs in Monitor.monitors[0].logs">
+                  <td :class="getEventTypeClass(getEventType(logs.type))">
+                    {{ getEventType(logs.type) }}
+                  </td>
+
+                  <td>{{ getEventTime(logs.datetime) }}</td>
+
+                  <td :class="getReasonClass(logs.reason.detail)">
+                    {{ logs.reason.detail }}
+                  </td>
+
+                  <td>
+                    {{
+                      parseInt(logs.duration / 3600) +
+                        " hrs, " +
+                        parseInt((logs.duration / 60) % 60) +
+                        " mins"
+                    }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </main>
       </div>
     </div>
@@ -29,6 +81,7 @@
 import axios from "axios";
 import viewHeader from "@/views/viewHeader";
 import ChartLine from "../chart/line.vue";
+import { getEventType, getCustomUptimeUnixTime } from "@/plugins/MonitorLibs";
 
 export default {
   components: {
@@ -39,7 +92,8 @@ export default {
       loaded: false,
       Monitor: "",
       chartOptions: null,
-      chartData: null
+      chartData: null,
+      UpTimeList: null,
     };
   },
   mounted() {
@@ -57,10 +111,8 @@ export default {
         logs_limit: "7",
         monitors: this.$route.params.id,
         response_times: "1",
-        timezone: "1",
-        all_time_uptime_ratio: "1",
-        all_time_uptime_durations: "1"
-      }
+        custom_uptime_ranges: getCustomUptimeUnixTime(7),
+      },
     }).then((data) => {
       this.loaded = true;
       this.Monitor = JSON.parse(data.request.response);
@@ -69,8 +121,82 @@ export default {
         value: this.Monitor.monitors[0].friendly_name,
       });
       this.chartData = this.Monitor.monitors[0].response_times;
+
+      this.UpTimeList = this.getUpTimeList(
+        this.Monitor.monitors[0].custom_uptime_ranges
+      );
     });
-  }
+  },
+
+  methods: {
+    getEventType,
+
+    getEventTime: (time) => {
+      let date = new Date(time * 1000);
+      return (
+        date.getFullYear() +
+        "-" +
+        date
+          .getMonth()
+          .toString()
+          .padStart(2, "0") +
+        "-" +
+        date
+          .getDate()
+          .toString()
+          .padStart(2, "0") +
+        " " +
+        date
+          .getHours()
+          .toString()
+          .padStart(2, "0") +
+        ":" +
+        date
+          .getMinutes()
+          .toString()
+          .padStart(2, "0") +
+        ":" +
+        date
+          .getSeconds()
+          .toString()
+          .padStart(2, "0")
+      );
+    },
+
+    getEventTypeClass: (status) => {
+      return "status status-" + status;
+    },
+
+    getReasonClass: (reason) => {
+      return "reason reason-" + reason.replace(/\s+/g, "_");
+    },
+
+    getUpTimeList: (list) => {
+      var listArr = [];
+
+      let unixDate = getCustomUptimeUnixTime(7)
+        .replace(/_\d+/g, "")
+        .split("-");
+      let upList = list.split("-");
+
+      for (let i = 0; i < 7; ++i) {
+        let listDate = new Date(unixDate[i] * 1000);
+
+        listArr.push({
+          time:
+            listDate
+              .getDate()
+              .toString()
+              .padStart(2, "0") +
+            " " +
+            listDate.toDateString().split(" ")[1],
+          status: upList[i],
+        });
+      }
+
+      return listArr;
+    },
+  },
 };
 </script>
 
@@ -104,5 +230,15 @@ export default {
 .box .ubox .utitle span {
   color: rgba(0, 0, 0, 0.55);
   font-size: 16px;
+}
+
+.table-fluid table tbody .reason {
+  font-weight: bold;
+  color: #ff5252;
+}
+
+.table-fluid table tbody .reason.reason-OK {
+  font-weight: unset;
+  color: #43a047;
 }
 </style>
