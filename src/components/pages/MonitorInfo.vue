@@ -142,8 +142,7 @@ export default {
       return (
         date.getFullYear() +
         "-" +
-        date
-          .getMonth()
+        parseInt(date.getMonth() + 1)
           .toString()
           .padStart(2, "0") +
         "-" +
