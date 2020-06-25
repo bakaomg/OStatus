@@ -2,8 +2,17 @@ import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
 import router from './router'
+import VueNoty from 'vuejs-noty'
+import 'vuejs-noty/dist/vuejs-noty.css'
 
 Vue.config.productionTip = false
+
+Vue.use(VueNoty, {
+  killer: true,
+  timeout: 4000,
+  progressBar: true,
+  layout: 'bottomRight'
+});
 
 new Vue({
   store,
