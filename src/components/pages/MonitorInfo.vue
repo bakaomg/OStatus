@@ -239,11 +239,13 @@ export default {
 
 .table-fluid table tbody .reason {
   font-weight: bold;
+}
+
+.table-fluid table tbody .status.status-Down ~ .reason {
   color: #ff5252;
 }
 
-.table-fluid table tbody .reason.reason-OK,
-.table-fluid table tbody .reason.reason-Successful_Response {
+.table-fluid table tbody .status.status-UP ~ .reason {
   font-weight: unset;
   color: #43a047;
 }
