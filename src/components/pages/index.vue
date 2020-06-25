@@ -3,11 +3,11 @@
     <div class="box">
       <div v-if="!loaded" class="load-icon">
         <svg class="load" viewBox="25 25 50 50">
-          <circle cx="50" cy="50" r="20"></circle>
+          <circle cx="50" cy="50" r="20" />
         </svg>
       </div>
 
-      <div v-else-if="loaded && MonitorsList != ''">
+      <div v-else-if="loaded && MonitorList.length != 0">
         <div class="table-fluid">
           <table class="table-hoverable">
             <thead>
@@ -20,20 +20,21 @@
             </thead>
 
             <tbody>
-              <tr v-for="monitors in MonitorsList.monitors">
-                <td><span :class="getMonitorStatusClass(getMonitorStatus(monitors.status))">{{ getMonitorStatus(monitors.status) }}</span></td>
+              <tr v-for="monitor in MonitorList">
+                <td>
+                  <span :class="monitor.getMonitorStatusClass()">{{ monitor.getMonitorStatus() }}</span>
+                </td>
 
                 <td class="name">
                   <router-link
-                    :to="'/Monitor/' + monitors.id.toString()"
-                    v-html="monitors.friendly_name"
-                    >{{ monitors.friendly_name }}</router-link
-                  >
+                    :to="'/Monitor/' + monitor.id.toString()"
+                    v-html="monitor.friendly_name"
+                  >{{ monitor.friendly_name }}</router-link>
                 </td>
 
-                <td>{{ getMonitorType(monitors.type) }}</td>
+                <td>{{ monitor.getMonitorType() }}</td>
 
-                <td>{{ getAverage(monitors.custom_uptime_ranges) }}%</td>
+                <td>{{ monitor.getAverage() }}%</td>
               </tr>
             </tbody>
           </table>
@@ -45,7 +46,7 @@
 
 <script>
 import axios from "axios";
-import { getMonitorType, getAverage, getCustomUptimeUnixTime, getMonitorStatus } from "@/plugins/MonitorLibs";
+import { getCustomUptimeUnixTime, buildMonitor } from "@/plugins/MonitorLibs";
 
 export default {
   name: "indexPage",
@@ -53,7 +54,7 @@ export default {
   data() {
     return {
       loaded: false,
-      MonitorsList: "",
+      MonitorList: []
     };
   },
 
@@ -62,35 +63,41 @@ export default {
       type: "changeBackBtn",
       value: false
     });
-
-    axios({
-      method: "POST",
-      url: process.env.VUE_APP_UpTimeBot_API_URL + "/v2/getMonitors",
-      data: {
-        api_key: process.env.VUE_APP_UpTimeBot_API_KEY,
-        format: "json",
-        logs: "1",
-        logs_limit: "7",
-        custom_uptime_ranges: getCustomUptimeUnixTime(7)
-      },
-    }).then((data) => {
-      this.loaded = true;
-      this.MonitorsList = JSON.parse(data.request.response);
-      this.$store.commit({
-        type: "changeVHeadTitle",
-        value: process.env.VUE_APP_headerTitle,
-      });
-    });
+    this.getMonitor(this);
   },
 
   methods: {
-    getMonitorType,
     getCustomUptimeUnixTime,
-    getAverage,
-    getMonitorStatus,
-    getMonitorStatusClass: (status) => {
-      status = status.replace(/\s+/g, "_");
-      return "status status-"+status;
+    getMonitor: (that) => {
+      axios({
+        method: "POST",
+        url: process.env.VUE_APP_UpTimeBot_API_URL + "/v2/getMonitors",
+        data: {
+          api_key: process.env.VUE_APP_UpTimeBot_API_KEY,
+          format: "json",
+          logs: "1",
+          logs_limit: "7",
+          custom_uptime_ranges: getCustomUptimeUnixTime(7)
+        }
+      })
+        .then(data => {
+          let response = JSON.parse(data.request.response);
+          if (response.stat != "ok") {
+            throw `Uptimerobot API错误，5s后重试。错误信息: '${response.error.message}'`;
+          }
+          that.loaded = true;
+          that.MonitorList = response.monitors?.map(monitorRaw =>
+            buildMonitor(monitorRaw)
+          );
+          that.$store.commit({
+            type: "changeVHeadTitle",
+            value: process.env.VUE_APP_headerTitle
+          });
+        })
+        .catch(error => {
+          that.$noty.error(error.toString());
+          setTimeout(that.getMonitor, 5 * 1000, that);
+        });
     }
   }
 };
@@ -123,7 +130,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  content: '';
+  content: "";
   height: 2px;
   position: absolute;
   transform: scaleX(0);
@@ -218,20 +225,20 @@ export default {
 }
 
 .table-fluid table tbody .status.status-UP {
-  color: #43A047;
+  color: #43a047;
 }
 
 .table-fluid table tbody .status.status-Down,
 .table-fluid table tbody .status.status-Seems_Down {
-  color: #FF5252;
+  color: #ff5252;
 }
 
 .table-fluid table tbody .status.status-Paused {
-  color: #FF9800;
+  color: #ff9800;
 }
 
 .table-fluid table tbody .status.status-Not_Checked_Yet,
 .table-fluid table tbody .status.status-Started {
-  color: #1E88E5;
+  color: #1e88e5;
 }
 </style>

@@ -3,13 +3,16 @@
     <div class="box">
       <div v-if="!loaded" class="load-icon">
         <svg class="load" viewBox="25 25 50 50">
-          <circle cx="50" cy="50" r="20"></circle>
+          <circle cx="50" cy="50" r="20" />
         </svg>
       </div>
 
       <div v-else-if="loaded && Monitor != ''">
         <main class="ubox">
-          <div class="utitle">Uptime <span>(Last 7 days)</span></div>
+          <div class="utitle">
+            Uptime
+            <span>(Last 7 days)</span>
+          </div>
           <div class="table-fluid">
             <table class="table-hoverable">
               <thead>
@@ -49,22 +52,20 @@
 
               <tbody>
                 <tr v-for="logs in Monitor.monitors[0].logs">
-                  <td :class="getEventTypeClass(getEventType(logs.type))">
-                    {{ getEventType(logs.type) }}
-                  </td>
+                  <td
+                    :class="getEventTypeClass(getEventType(logs.type))"
+                  >{{ getEventType(logs.type) }}</td>
 
                   <td>{{ getEventTime(logs.datetime) }}</td>
 
-                  <td :class="getReasonClass(logs.reason.detail)">
-                    {{ logs.reason.detail }}
-                  </td>
+                  <td :class="getReasonClass(logs.reason.detail)">{{ logs.reason.detail }}</td>
 
                   <td>
                     {{
-                      parseInt(logs.duration / 3600) +
-                        " hrs, " +
-                        parseInt((logs.duration / 60) % 60) +
-                        " mins"
+                    parseInt(logs.duration / 3600) +
+                    " hrs, " +
+                    parseInt((logs.duration / 60) % 60) +
+                    " mins"
                     }}
                   </td>
                 </tr>
@@ -85,7 +86,7 @@ import { getEventType, getCustomUptimeUnixTime } from "@/plugins/MonitorLibs";
 
 export default {
   components: {
-    ChartLine,
+    ChartLine
   },
   data() {
     return {
@@ -93,51 +94,26 @@ export default {
       Monitor: "",
       chartOptions: null,
       chartData: null,
-      UpTimeList: null,
+      UpTimeList: null
     };
   },
   mounted() {
     this.$store.commit({
       type: "changeVHeadTitle",
-      value: process.env.VUE_APP_headerTitle,
+      value: process.env.VUE_APP_headerTitle
     });
 
     this.$store.commit({
       type: "changeBackBtn",
       value: true
     });
-
-    axios({
-      method: "POST",
-      url: process.env.VUE_APP_UpTimeBot_API_URL + "/v2/getMonitors",
-      data: {
-        api_key: process.env.VUE_APP_UpTimeBot_API_KEY,
-        format: "json",
-        logs: "1",
-        logs_limit: "7",
-        monitors: this.$route.params.id,
-        response_times: "1",
-        custom_uptime_ranges: getCustomUptimeUnixTime(7),
-      },
-    }).then((data) => {
-      this.loaded = true;
-      this.Monitor = JSON.parse(data.request.response);
-      this.$store.commit({
-        type: "changeVHeadTitle",
-        value: this.Monitor.monitors[0].friendly_name,
-      });
-      this.chartData = this.Monitor.monitors[0].response_times;
-
-      this.UpTimeList = this.getUpTimeList(
-        this.Monitor.monitors[0].custom_uptime_ranges
-      );
-    });
+    this.getMonitor(this);
   },
 
   methods: {
     getEventType,
 
-    getEventTime: (time) => {
+    getEventTime: time => {
       let date = new Date(time * 1000);
       return (
         date.getFullYear() +
@@ -168,15 +144,15 @@ export default {
       );
     },
 
-    getEventTypeClass: (status) => {
+    getEventTypeClass: status => {
       return "status status-" + status;
     },
 
-    getReasonClass: (reason) => {
+    getReasonClass: reason => {
       return "reason reason-" + reason.replace(/\s+/g, "_");
     },
 
-    getUpTimeList: (list) => {
+    getUpTimeList: list => {
       var listArr = [];
 
       let unixDate = getCustomUptimeUnixTime(7)
@@ -195,13 +171,49 @@ export default {
               .padStart(2, "0") +
             " " +
             listDate.toDateString().split(" ")[1],
-          status: upList[i],
+          status: upList[i]
         });
       }
 
       return listArr;
     },
-  },
+    getMonitor: (that) => {
+      axios({
+        method: "POST",
+        url: process.env.VUE_APP_UpTimeBot_API_URL + "/v2/getMonitors",
+        data: {
+          api_key: process.env.VUE_APP_UpTimeBot_API_KEY,
+          format: "json",
+          logs: "1",
+          logs_limit: "7",
+          monitors: that.$route.params.id,
+          response_times: "1",
+          custom_uptime_ranges: getCustomUptimeUnixTime(7)
+        }
+      })
+        .then(data => {
+          let response = JSON.parse(data.request.response);
+          if (response.stat != "ok") {
+            throw `Uptimerobot API错误，5s后重试。错误信息: '${response.error.message}'`;
+          }
+          that.loaded = true;
+          that.Monitor = response;
+          that.$store.commit({
+            type: "changeVHeadTitle",
+            value: that.Monitor.monitors[0].friendly_name
+          });
+          that.chartData = that.Monitor.monitors[0].response_times;
+
+          that.UpTimeList = that.getUpTimeList(
+            that.Monitor.monitors[0].custom_uptime_ranges
+          );
+        })
+        .catch(error => {
+          that.$noty.error(error.toString());
+          setTimeout(that.getMonitor, 5 * 1000, that);
+        });
+    }
+  }
 };
 </script>
 
@@ -251,6 +263,6 @@ export default {
 }
 
 .table-fluid table tbody .reason.reason-Monitor_started {
-  color: #1E88E5;
+  color: #1e88e5;
 }
 </style>
